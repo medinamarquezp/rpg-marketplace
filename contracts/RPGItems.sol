@@ -23,6 +23,10 @@ contract RPGItems {
         _initItems();
     }
 
+    function _currentItemId() internal view returns (uint256) {
+        return _ItemId.current();
+    }
+
     function _getNextItemId() internal returns (uint256) {
         _ItemId.increment();
         return _ItemId.current();

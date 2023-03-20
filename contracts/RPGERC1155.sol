@@ -17,7 +17,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
         uint256 _itemId,
         uint256 _total
     ) external onlyowner returns (bool) {
-        require(_itemId > 0 && _itemId <= _ItemId, "Invalid item Id");
+        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
         require(_total <= _Items[_itemId].units, "Not enough items to mint");
         _mint(msg.sender, _itemId, _total, "");
         _Items[_itemId].units -= _total;
@@ -28,7 +28,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
         uint256 _itemId,
         uint256 _total
     ) external onlyowner returns (bool) {
-        require(_itemId > 0 && _itemId <= _ItemId, "Invalid item Id");
+        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
         require(_total > 0, "Total must be a positive number");
         require(
             _total + _Items[_itemId].units < _Items[_itemId].limit,
@@ -57,7 +57,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
     }
 
     function drainItem(uint256 _itemId) external onlyowner returns (bool) {
-        require(_itemId > 0 && _itemId <= _ItemId, "Invalid item Id");
+        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
         _Items[_itemId].units = 0;
         return true;
     }
