@@ -21,6 +21,14 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return _Items[_GoldCoinId].units;
     }
 
+    function getLastItemId() external view returns (uint256) {
+        return _currentItemId();
+    }
+
+    function getItem(uint256 _itemId) external view returns (Item memory) {
+        return _Items[_itemId];
+    }
+
     function decrementGoldenCoins(
         uint256 _units
     ) external onlyowner returns (uint256) {
@@ -43,17 +51,22 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return true;
     }
 
+    function drainItem(uint256 _itemId) external onlyowner returns (bool) {
+        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
+        _Items[_itemId].units = 0;
+        return true;
+    }
+
     function supplyItems(
         uint256 _itemId,
         uint256 _total
     ) external onlyowner returns (bool) {
         require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
-        require(_total > 0, "Total must be a positive number");
         require(
             _total + _Items[_itemId].units < _Items[_itemId].limit,
             "To much items to supply"
         );
-        _Items[_itemId].limit += _total;
+        _Items[_itemId].units += _total;
         return true;
     }
 
@@ -73,12 +86,6 @@ contract RPGERC1155 is ERC1155, RPGItems {
             price: _price
         });
         return itemId;
-    }
-
-    function drainItem(uint256 _itemId) external onlyowner returns (bool) {
-        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
-        _Items[_itemId].units = 0;
-        return true;
     }
 
     modifier onlyowner() {

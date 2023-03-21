@@ -33,7 +33,6 @@ contract RPGItems {
     }
 
     function _initItems() private {
-        _ItemId.increment();
         _Items[_ItemId.current()] = Item({
             id: _ItemId.current(),
             category: "coins",
