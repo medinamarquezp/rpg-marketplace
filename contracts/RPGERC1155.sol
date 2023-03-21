@@ -13,6 +13,25 @@ contract RPGERC1155 is ERC1155, RPGItems {
         _Items[_GoldCoinId].units -= 1000;
     }
 
+    function getGoldenCoinId() external view returns (uint256) {
+        return _Items[_GoldCoinId].id;
+    }
+
+    function getGoldenCoinUnits() external view returns (uint256) {
+        return _Items[_GoldCoinId].units;
+    }
+
+    function decrementGoldenCoins(
+        uint256 _units
+    ) external onlyowner returns (uint256) {
+        require(
+            _units <= _Items[_GoldCoinId].units,
+            "Not enough units to decrease"
+        );
+        _Items[_GoldCoinId].units -= _units;
+        return _Items[_GoldCoinId].units;
+    }
+
     function mint(
         uint256 _itemId,
         uint256 _total
