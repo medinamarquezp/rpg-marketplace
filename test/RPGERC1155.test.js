@@ -22,21 +22,6 @@ contract("RPGERC1155 tests", (accounts) => {
     );
   });
 
-  it("Should validate decrement Gold Coin action", async () => {
-    await truffleAssert.fails(
-      instance.decrementGoldenCoins(1000000000000),
-      truffleAssert.ErrorType.REVERT,
-      "Not enough units to decrease"
-    );
-    await instance.decrementGoldenCoins(9000);
-    const result = await instance.getGoldenCoinUnits();
-    assert.equal(
-      result.toString(),
-      "999990000",
-      "Should decrement 9000 Gold Coins"
-    );
-  });
-
   it("Should validate mint action", async () => {
     await truffleAssert.fails(
       instance.mint(999, 1000),
@@ -67,7 +52,7 @@ contract("RPGERC1155 tests", (accounts) => {
     const tokensBalance = await instance.getGoldenCoinUnits();
     assert.equal(
       tokensBalance.toString(),
-      "999989900",
+      "999998900",
       "Should decrement 100 Gold Coins to tokens balance"
     );
   });

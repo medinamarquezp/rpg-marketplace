@@ -15,11 +15,11 @@ contract RPGERC1155 is ERC1155, RPGItems {
     }
 
     function authorize(
-        address operator,
-        bool status
+        address _address,
+        bool _status
     ) external onlyauthorized returns (bool) {
-        authorized[operator] = true;
-        setApprovalForAll(operator, status);
+        authorized[_address] = _status;
+        setApprovalForAll(_address, _status);
         return true;
     }
 
@@ -39,17 +39,6 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return items[_itemId];
     }
 
-    function decrementGoldenCoins(
-        uint256 _units
-    ) external onlyauthorized returns (uint256) {
-        require(
-            _units <= items[goldCoinId].units,
-            "Not enough units to decrease"
-        );
-        items[goldCoinId].units -= _units;
-        return items[goldCoinId].units;
-    }
-
     function mint(
         uint256 _itemId,
         uint256 _total
@@ -57,6 +46,17 @@ contract RPGERC1155 is ERC1155, RPGItems {
         require(_itemId > 0 && _itemId <= getLastItemId(), "Invalid item Id");
         require(_total <= items[_itemId].units, "Not enough items to mint");
         _mint(msg.sender, _itemId, _total, "");
+        items[_itemId].units -= _total;
+        return true;
+    }
+
+    function burn(
+        uint256 _itemId,
+        uint256 _total
+    ) external onlyauthorized returns (bool) {
+        require(_itemId > 0 && _itemId <= getLastItemId(), "Invalid item Id");
+        require(_total <= items[_itemId].units, "Not enough items to mint");
+        _burn(msg.sender, _itemId, _total);
         items[_itemId].units -= _total;
         return true;
     }
