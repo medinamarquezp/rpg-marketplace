@@ -29,23 +29,23 @@ contract("RPGERC1155 tests", (accounts) => {
 
   it("Should validate mint action", async () => {
     await truffleAssert.fails(
-      instance.mint(accounts[0], 999, 1000),
+      instance.mint(999, 1000),
       truffleAssert.ErrorType.REVERT,
       "Invalid item Id"
     );
     await truffleAssert.fails(
-      instance.mint(accounts[0], 1, 1000000000000),
+      instance.mint(1, 1000000000000),
       truffleAssert.ErrorType.REVERT,
       "Item limit reached"
     );
     await truffleAssert.fails(
-      instance.mint(accounts[0], 1, 100, {
+      instance.mint(1, 100, {
         from: accounts[1],
       }),
       truffleAssert.ErrorType.REVERT,
       "This operation is only available for authorized address"
     );
-    await instance.mint(accounts[0], 1, 100);
+    await instance.mint(1, 100);
     const accountBalance = await instance.balanceOf(accounts[0], 1);
     assert.equal(
       accountBalance.toString(),
@@ -56,23 +56,23 @@ contract("RPGERC1155 tests", (accounts) => {
 
   it("Should validate burn action", async () => {
     await truffleAssert.fails(
-      instance.burn(accounts[0], 999, 1000),
+      instance.burn(999, 1000),
       truffleAssert.ErrorType.REVERT,
       "Invalid item Id"
     );
     await truffleAssert.fails(
-      instance.burn(accounts[0], 1, 1000000000000),
+      instance.burn(1, 1000000000000),
       truffleAssert.ErrorType.REVERT,
       "Not enough items to burn"
     );
     await truffleAssert.fails(
-      instance.burn(accounts[0], 1, 100, {
+      instance.burn(1, 100, {
         from: accounts[1],
       }),
       truffleAssert.ErrorType.REVERT,
       "This operation is only available for authorized address"
     );
-    await instance.burn(accounts[0], 1, 10);
+    await instance.burn(1, 10);
     const accountBalance = await instance.balanceOf(accounts[0], 1);
     assert.equal(accountBalance.toString(), "90", "Should burn 10 Gold Coins");
   });
