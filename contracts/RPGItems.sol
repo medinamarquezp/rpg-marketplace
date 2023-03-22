@@ -1,17 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import {Item} from "./SharedEntities.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract RPGItems {
     using Counters for Counters.Counter;
-    struct Item {
-        uint256 id;
-        string name;
-        string category;
-        uint256 limit;
-        uint256 price;
-    }
     uint256 internal goldCoinId;
     Counters.Counter internal itemId;
     mapping(uint256 => Item) internal items;
