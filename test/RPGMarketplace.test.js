@@ -124,4 +124,15 @@ contract("RPGMarketplace tests", (accounts) => {
       "Marketplace Tridemt balance should be 90"
     );
   });
+
+  it("Should validate get item from marketplace", async () => {
+    await truffleAssert.fails(
+      marketplace.getItem(999),
+      truffleAssert.ErrorType.REVERT,
+      "Invalid item Id"
+    );
+    const item = await marketplace.getItem(3);
+    assert.equal(item.name, "Fauchard", "Should validate item name");
+    assert.equal(item.category, "weapons", "Should validate item category");
+  });
 });

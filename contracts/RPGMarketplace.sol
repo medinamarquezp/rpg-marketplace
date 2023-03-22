@@ -31,6 +31,10 @@ contract RPGMarketplace is ERC1155Holder {
         return true;
     }
 
+    function getItem(uint256 _itemId) public view returns (Item memory) {
+        return nftContract.getItem(_itemId);
+    }
+
     function buyGoldenCoins(uint256 _amount) public payable returns (bool) {
         // Validación fondos golden coins
         uint256 goldenCoinUnits = nftContract.getItemUnits(

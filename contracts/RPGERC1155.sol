@@ -22,6 +22,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
     }
 
     function getItem(uint256 _itemId) public view returns (Item memory) {
+        require(isValidItemId(_itemId), "Invalid item Id");
         return items[_itemId];
     }
 
