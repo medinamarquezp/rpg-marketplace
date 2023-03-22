@@ -25,8 +25,11 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return items[_itemId];
     }
 
-    function getItemUnits(uint256 _itemId) public view returns (uint256) {
-        return itemUnits[msg.sender][_itemId];
+    function getItemUnits(
+        address _address,
+        uint256 _itemId
+    ) public view returns (uint256) {
+        return itemUnits[_address][_itemId];
     }
 
     function isValidItemId(uint256 _itemId) public view returns (bool) {
@@ -79,7 +82,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
     ) external onlyauthorized returns (bool) {
         require(isValidItemId(_itemId), "Invalid item Id");
         uint256 units = itemUnits[_address][_itemId];
-        require(_total < units, "Not enough items to burn");
+        require(_total <= units, "Not enough items to burn");
         _burn(_address, _itemId, _total);
         itemUnits[_address][_itemId] -= _total;
         return true;
