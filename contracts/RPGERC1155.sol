@@ -42,6 +42,23 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return true;
     }
 
+    function addNewItem(
+        string memory _name,
+        string memory _category,
+        uint256 _limit,
+        uint256 _price
+    ) external onlyauthorized returns (uint256) {
+        uint256 itemId = getNextItemId();
+        items[itemId] = Item({
+            id: itemId,
+            name: _name,
+            category: _category,
+            limit: _limit,
+            price: _price
+        });
+        return itemId;
+    }
+
     function mint(
         address _address,
         uint256 _itemId,

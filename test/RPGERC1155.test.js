@@ -76,4 +76,38 @@ contract("RPGERC1155 tests", (accounts) => {
     const accountBalance = await instance.balanceOf(accounts[0], 1);
     assert.equal(accountBalance.toString(), "90", "Should burn 10 Gold Coins");
   });
+
+  it("Should validate add new item action", async () => {
+    await truffleAssert.fails(
+      instance.addNewItem("Test item", "test", 10, 100, {
+        from: accounts[1],
+      }),
+      truffleAssert.ErrorType.REVERT,
+      "This operation is only available for authorized address"
+    );
+    await instance.addNewItem("Test item", "test", 10, 100);
+    const createdItemId = await instance.getLastItemId();
+    const item = await instance.getItem(createdItemId);
+    assert.equal(
+      item.id,
+      createdItemId.toString(),
+      "Should validate created item ID"
+    );
+    assert.equal(item.name, "Test item", "Should validate created item name");
+    assert.equal(
+      item.category,
+      "test",
+      "Should validate created item category"
+    );
+    assert.equal(
+      item.limit.toString(),
+      "10",
+      "Should validate created item limit"
+    );
+    assert.equal(
+      item.price.toString(),
+      "100",
+      "Should validate created item price"
+    );
+  });
 });
