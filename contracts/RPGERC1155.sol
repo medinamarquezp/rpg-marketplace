@@ -33,6 +33,13 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return _itemId > 0 && _itemId <= getLastItemId();
     }
 
+    function authorizeBuyer(
+        address _buyerAddress
+    ) external onlyauthorized returns (bool) {
+        _setApprovalForAll(_buyerAddress, msg.sender, true);
+        return true;
+    }
+
     function authorize(
         address _address,
         bool _status

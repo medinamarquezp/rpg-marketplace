@@ -64,4 +64,64 @@ contract("RPGMarketplace tests", (accounts) => {
       "Marketplace balance should be 990"
     );
   });
+
+  it("Should buy marketplace items", async () => {
+    // Prepare: Supply items and funds
+    await marketplace.supplyItems(1, 1000);
+    await marketplace.supplyItems(2, 100);
+    await marketplace.buyGoldenCoins(100, {
+      from: accounts[2],
+      value: web3.utils.toWei("1", "ether"),
+    });
+    // Test validations
+    await truffleAssert.fails(
+      marketplace.buyItems(999, 10),
+      truffleAssert.ErrorType.REVERT,
+      "Invalid item Id"
+    );
+    await truffleAssert.fails(
+      marketplace.buyItems(2, 200),
+      truffleAssert.ErrorType.REVERT,
+      "Not available items to sell"
+    );
+    await truffleAssert.fails(
+      marketplace.buyItems(2, 100),
+      truffleAssert.ErrorType.REVERT,
+      "This transaction requires 200 Gold Coins."
+    );
+    await marketplace.buyItems(2, 10, {
+      from: accounts[2],
+    });
+    const accountGoldCoinBalance = await nft.balanceOf(accounts[2], 1);
+    assert.equal(
+      accountGoldCoinBalance.toString(),
+      "80",
+      "Account Gold Coin balance should be 80"
+    );
+    const accountTridentBalance = await nft.balanceOf(accounts[2], 2);
+    assert.equal(
+      accountTridentBalance.toString(),
+      "10",
+      "Account Tridemt balance should be 10"
+    );
+
+    const marketplaceGoldCoinBalance = await nft.balanceOf(
+      marketplace.address,
+      1
+    );
+    assert.equal(
+      marketplaceGoldCoinBalance.toString(),
+      "1910",
+      "Marketplace Gold Coin balance should be 1910"
+    );
+    const marketplaceTridentBalance = await nft.balanceOf(
+      marketplace.address,
+      2
+    );
+    assert.equal(
+      marketplaceTridentBalance.toString(),
+      "90",
+      "Marketplace Tridemt balance should be 90"
+    );
+  });
 });
