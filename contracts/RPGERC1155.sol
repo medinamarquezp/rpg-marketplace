@@ -25,6 +25,10 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return items[_itemId];
     }
 
+    function getItemUnits(uint256 _itemId) public view returns (uint256) {
+        return itemUnits[msg.sender][_itemId];
+    }
+
     function authorize(
         address _address,
         bool _status
@@ -35,26 +39,28 @@ contract RPGERC1155 is ERC1155, RPGItems {
     }
 
     function mint(
+        address _address,
         uint256 _itemId,
         uint256 _total
     ) external onlyauthorized returns (bool) {
         require(_itemId > 0 && _itemId <= getLastItemId(), "Invalid item Id");
-        uint256 units = itemUnits[msg.sender][_itemId];
+        uint256 units = itemUnits[_address][_itemId];
         require(_total + units < items[_itemId].limit, "Item limit reached");
-        _mint(msg.sender, _itemId, _total, "");
-        itemUnits[msg.sender][_itemId] += _total;
+        _mint(_address, _itemId, _total, "");
+        itemUnits[_address][_itemId] += _total;
         return true;
     }
 
     function burn(
+        address _address,
         uint256 _itemId,
         uint256 _total
     ) external onlyauthorized returns (bool) {
         require(_itemId > 0 && _itemId <= getLastItemId(), "Invalid item Id");
-        uint256 units = itemUnits[msg.sender][_itemId];
+        uint256 units = itemUnits[_address][_itemId];
         require(_total < units, "Not enough items to burn");
-        _burn(msg.sender, _itemId, _total);
-        itemUnits[msg.sender][_itemId] -= _total;
+        _burn(_address, _itemId, _total);
+        itemUnits[_address][_itemId] -= _total;
         return true;
     }
 
