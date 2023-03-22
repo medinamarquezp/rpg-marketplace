@@ -1,6 +1,6 @@
 # 🧙‍♂️ Role-playing game ERC1155 marketplace
 
-This project implements a Role-playing items marketplace by using an ERC1155 smart contract. Buyers should acquire Golden Coins by using MATIC tokens to be able to buy other marketplace items.
+This project implements a Role-playing item marketplace by using an ERC1155 smart contract. Buyers should acquire Golden Coins by using MATIC tokens to be able to buy other marketplace items.
 
 ## Prerequisites
 
