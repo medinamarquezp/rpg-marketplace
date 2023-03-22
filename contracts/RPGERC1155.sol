@@ -5,12 +5,22 @@ import "./RPGItems.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 contract RPGERC1155 is ERC1155, RPGItems {
-    address internal owner;
+    address private owner;
+    mapping(address => bool) private authorized;
 
     constructor() ERC1155("") {
         owner = msg.sender;
         _mint(msg.sender, _GoldCoinId, 1000, "");
         _Items[_GoldCoinId].units -= 1000;
+    }
+
+    function authorize(
+        address operator,
+        bool status
+    ) external onlyauthorized returns (bool) {
+        authorized[operator] = true;
+        setApprovalForAll(operator, status);
+        return true;
     }
 
     function getGoldenCoinId() external view returns (uint256) {
@@ -31,7 +41,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
 
     function decrementGoldenCoins(
         uint256 _units
-    ) external onlyowner returns (uint256) {
+    ) external onlyauthorized returns (uint256) {
         require(
             _units <= _Items[_GoldCoinId].units,
             "Not enough units to decrease"
@@ -43,7 +53,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
     function mint(
         uint256 _itemId,
         uint256 _total
-    ) external onlyowner returns (bool) {
+    ) external onlyauthorized returns (bool) {
         require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
         require(_total <= _Items[_itemId].units, "Not enough items to mint");
         _mint(msg.sender, _itemId, _total, "");
@@ -51,7 +61,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return true;
     }
 
-    function drainItem(uint256 _itemId) external onlyowner returns (bool) {
+    function drainItem(uint256 _itemId) external onlyauthorized returns (bool) {
         require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
         _Items[_itemId].units = 0;
         return true;
@@ -60,7 +70,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
     function supplyItems(
         uint256 _itemId,
         uint256 _total
-    ) external onlyowner returns (bool) {
+    ) external onlyauthorized returns (bool) {
         require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
         require(
             _total + _Items[_itemId].units < _Items[_itemId].limit,
@@ -75,7 +85,7 @@ contract RPGERC1155 is ERC1155, RPGItems {
         string memory _category,
         uint256 _limit,
         uint256 _price
-    ) external onlyowner returns (uint256) {
+    ) external onlyauthorized returns (uint256) {
         uint256 itemId = _getNextItemId();
         _Items[itemId] = Item({
             id: itemId,
@@ -88,10 +98,10 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return itemId;
     }
 
-    modifier onlyowner() {
+    modifier onlyauthorized() {
         require(
-            msg.sender == owner,
-            "This operation is only available for contract owner"
+            msg.sender == owner || authorized[msg.sender],
+            "This operation is only available for authorized address"
         );
         _;
     }
