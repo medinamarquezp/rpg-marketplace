@@ -30,6 +30,33 @@ contract RPGMarketplace is ERC1155Holder {
         return true;
     }
 
+    function buyGoldenCoins(uint256 _amount) external payable {
+        // Validación fondos golden coins
+        uint256 goldenCoinUnits = nftContract.getItemUnits(
+            nftContract.getGoldenCoinId()
+        );
+        require(_amount <= goldenCoinUnits, "Not available coins to sell");
+        // Validación token enviados
+        require(_amount % 10 == 0, "Amount must be multiple of 10");
+        uint256 cost = (_amount / 10) * .1 ether;
+        require(
+            msg.value == cost,
+            string.concat(
+                "This transaction costs ",
+                Strings.toString(cost),
+                " MATIC"
+            )
+        );
+        // Transferencia de NFT
+        nftContract.safeTransferFrom(
+            address(this),
+            msg.sender,
+            nftContract.getGoldenCoinId(),
+            _amount,
+            ""
+        );
+    }
+
     modifier onlyowner() {
         require(
             msg.sender == owner,

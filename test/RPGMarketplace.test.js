@@ -29,4 +29,39 @@ contract("RPGMarketplace tests", (accounts) => {
       "Should drain all Gold Coin units"
     );
   });
+
+  it("Should buy Golden Coins", async () => {
+    await marketplace.supplyItems(1, 1000);
+    await truffleAssert.fails(
+      marketplace.buyGoldenCoins(1000000000000),
+      truffleAssert.ErrorType.REVERT,
+      "Not available coins to sell"
+    );
+    await truffleAssert.fails(
+      marketplace.buyGoldenCoins(12),
+      truffleAssert.ErrorType.REVERT,
+      "Amount must be multiple of 10"
+    );
+    await truffleAssert.fails(
+      marketplace.buyGoldenCoins(10),
+      truffleAssert.ErrorType.REVERT,
+      "This transaction costs 100000000000000000 MATIC"
+    );
+    await marketplace.buyGoldenCoins(10, {
+      from: accounts[1],
+      value: web3.utils.toWei(".1", "ether"),
+    });
+    const accountBalance = await nft.balanceOf(accounts[1], 1);
+    assert.equal(
+      accountBalance.toString(),
+      "10",
+      "Account balance should be 10"
+    );
+    const marketplaceBalance = await nft.balanceOf(marketplace.address, 1);
+    assert.equal(
+      marketplaceBalance.toString(),
+      "990",
+      "Marketplace balance should be 990"
+    );
+  });
 });
