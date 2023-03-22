@@ -53,7 +53,7 @@ contract("RPGERC1155 tests", (accounts) => {
         from: accounts[1],
       }),
       truffleAssert.ErrorType.REVERT,
-      "This operation is only available for contract owner"
+      "This operation is only available for authorized address"
     );
     await instance.mint(1, 100, {
       from: accounts[0],
@@ -83,7 +83,7 @@ contract("RPGERC1155 tests", (accounts) => {
         from: accounts[1],
       }),
       truffleAssert.ErrorType.REVERT,
-      "This operation is only available for contract owner"
+      "This operation is only available for authorized address"
     );
     await instance.drainItem(1);
     const tokensBalance = await instance.getGoldenCoinUnits();
@@ -105,7 +105,7 @@ contract("RPGERC1155 tests", (accounts) => {
         from: accounts[1],
       }),
       truffleAssert.ErrorType.REVERT,
-      "This operation is only available for contract owner"
+      "This operation is only available for authorized address"
     );
     await truffleAssert.fails(
       instance.supplyItems(1, 1000000000000),
@@ -127,7 +127,7 @@ contract("RPGERC1155 tests", (accounts) => {
         from: accounts[1],
       }),
       truffleAssert.ErrorType.REVERT,
-      "This operation is only available for contract owner"
+      "This operation is only available for authorized address"
     );
     await instance.addNewItem("Test item", "test", 10, 100);
     const createdItemId = await instance.getLastItemId();

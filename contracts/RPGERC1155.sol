@@ -10,8 +10,8 @@ contract RPGERC1155 is ERC1155, RPGItems {
 
     constructor() ERC1155("") {
         owner = msg.sender;
-        _mint(msg.sender, _GoldCoinId, 1000, "");
-        _Items[_GoldCoinId].units -= 1000;
+        _mint(msg.sender, goldCoinId, 1000, "");
+        items[goldCoinId].units -= 1000;
     }
 
     function authorize(
@@ -23,47 +23,47 @@ contract RPGERC1155 is ERC1155, RPGItems {
         return true;
     }
 
-    function getGoldenCoinId() external view returns (uint256) {
-        return _Items[_GoldCoinId].id;
+    function getGoldenCoinId() public view returns (uint256) {
+        return goldCoinId;
     }
 
-    function getGoldenCoinUnits() external view returns (uint256) {
-        return _Items[_GoldCoinId].units;
+    function getGoldenCoinUnits() public view returns (uint256) {
+        return items[goldCoinId].units;
     }
 
-    function getLastItemId() external view returns (uint256) {
-        return _currentItemId();
+    function getLastItemId() public view returns (uint256) {
+        return currentItemId();
     }
 
-    function getItem(uint256 _itemId) external view returns (Item memory) {
-        return _Items[_itemId];
+    function getItem(uint256 _itemId) public view returns (Item memory) {
+        return items[_itemId];
     }
 
     function decrementGoldenCoins(
         uint256 _units
     ) external onlyauthorized returns (uint256) {
         require(
-            _units <= _Items[_GoldCoinId].units,
+            _units <= items[goldCoinId].units,
             "Not enough units to decrease"
         );
-        _Items[_GoldCoinId].units -= _units;
-        return _Items[_GoldCoinId].units;
+        items[goldCoinId].units -= _units;
+        return items[goldCoinId].units;
     }
 
     function mint(
         uint256 _itemId,
         uint256 _total
     ) external onlyauthorized returns (bool) {
-        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
-        require(_total <= _Items[_itemId].units, "Not enough items to mint");
+        require(_itemId > 0 && _itemId <= getLastItemId(), "Invalid item Id");
+        require(_total <= items[_itemId].units, "Not enough items to mint");
         _mint(msg.sender, _itemId, _total, "");
-        _Items[_itemId].units -= _total;
+        items[_itemId].units -= _total;
         return true;
     }
 
     function drainItem(uint256 _itemId) external onlyauthorized returns (bool) {
-        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
-        _Items[_itemId].units = 0;
+        require(_itemId > 0 && _itemId <= getLastItemId(), "Invalid item Id");
+        items[_itemId].units = 0;
         return true;
     }
 
@@ -71,12 +71,12 @@ contract RPGERC1155 is ERC1155, RPGItems {
         uint256 _itemId,
         uint256 _total
     ) external onlyauthorized returns (bool) {
-        require(_itemId > 0 && _itemId <= _currentItemId(), "Invalid item Id");
+        require(_itemId > 0 && _itemId <= getLastItemId(), "Invalid item Id");
         require(
-            _total + _Items[_itemId].units < _Items[_itemId].limit,
+            _total + items[_itemId].units < items[_itemId].limit,
             "To much items to supply"
         );
-        _Items[_itemId].units += _total;
+        items[_itemId].units += _total;
         return true;
     }
 
@@ -86,8 +86,8 @@ contract RPGERC1155 is ERC1155, RPGItems {
         uint256 _limit,
         uint256 _price
     ) external onlyauthorized returns (uint256) {
-        uint256 itemId = _getNextItemId();
-        _Items[itemId] = Item({
+        uint256 itemId = getNextItemId();
+        items[itemId] = Item({
             id: itemId,
             name: _name,
             category: _category,
